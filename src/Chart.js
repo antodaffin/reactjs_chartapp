@@ -1,0 +1,215 @@
+import React, { PureComponent } from 'react';
+import {LineChart, Line, BarChart, Bar,  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+} from 'recharts';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+  } from '@material-ui/pickers';
+import moment from 'moment'
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+
+//   var moment = require('moment');
+ 
+
+export default class Charts extends PureComponent {
+       
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+            selectedDate:new Date(),
+            isSelected:false,
+            isSelected1:false,
+            selectedDate1:new Date(),
+            charts:"",
+            chart:false
+            
+        }
+    }
+    
+    handleStartDateChange=(date)=>{
+        this.setState({
+            selectedDate:date,
+            isSelected:true,
+           
+        })
+    }
+    handleEndDateChange=(date)=>{ 
+        this.setState({
+            selectedDate1:date,
+            isSelected1:true
+        })
+    }
+    calculateDaysLeft(selectedDate, selectedDate1) {
+        if (!moment.isMoment(selectedDate)) selectedDate = moment(selectedDate);
+        if (!moment.isMoment(selectedDate1)) selectedDate1= moment(selectedDate1);    
+        return selectedDate1.diff(selectedDate, "days");
+      }
+
+   
+      getDates(selectedDate, selectedDate1) {
+        var dateArray = [];
+        var currentDate = moment(selectedDate);
+        var stopDate = moment(selectedDate1);
+       
+        while (currentDate <= stopDate) { 
+            dateArray.push({ date:moment(currentDate).format('YYYY-MM-DD'),
+            pv:this.state.pv+200,amt:this.state.amt
+        } )
+            currentDate = moment(currentDate).add(1, 'days');
+        }
+        return dateArray;
+    }
+    handleChartsChange = (event) => {
+        this.setState({
+            charts: event.target.value,
+            chart:true
+        })
+      
+      };
+
+  render() {
+  
+      console.log(this.state.charts)
+   const days=this.getDates(this.state.selectedDate, this.state.selectedDate1,)
+   console.log(days)
+     
+    const daysLeft = this.calculateDaysLeft(this.state.selectedDate, this.state.selectedDate1);
+    console.log(daysLeft)
+    
+      console.log(this.state.selectedDate)
+    const data = [
+        {
+          name: moment(this.state.selectedDate).format('DD-MM-YYYY'), pv: 2400, amt: 2400,
+        },
+        {
+          name: moment('2020-3-10').format('DD-MM-YYYY'),  pv: 1398, amt: 2210,
+        },
+        {
+          name:moment('2020-3-12').format('DD-MM-YYYY'),  pv: 12000, amt: 2290,
+        },
+        {
+          name:moment('2020-3-15').format('DD-MM-YYYY'),  pv: 3908, amt: 2000,
+        },
+        {
+          name: moment('2020-3-17').format('DD-MM-YYYY'), pv: 4800, amt: 2181,
+        },
+        {
+            name: moment('2020-3-19').format('DD-MM-YYYY'), pv: 3800, amt: 2281,
+          },
+        
+        {
+          name: moment(this.state.selectedDate1).format('DD-MM-YYYY'), pv: 4300, amt: 2100,
+        },
+      ];
+      
+    
+    return (
+      
+<>
+ 
+        <div style={{marginTop:"50px"}}>
+            <h2>Sample Line Chart</h2>
+
+
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                style={{position:"absolute", left:"10px"}}
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Starting Date"
+                value={this.state.selectedDate}
+                onChange={this.handleStartDateChange}
+                KeyboardButtonProps={{
+                'aria-label': 'change date',
+                }}
+            />
+            </MuiPickersUtilsProvider>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Ending Date"
+                value={this.state.selectedDate1}
+                onChange={this.handleEndDateChange}
+                KeyboardButtonProps={{
+                'aria-label': 'change date',
+                }}
+            />
+            </MuiPickersUtilsProvider>
+      
+        <FormControl style={{   
+            position:"absolute", marginTop:"10px", right:"80px",
+        minWidth: 120,}}>
+        <InputLabel id="demo-simple-select-label">Select an chart option</InputLabel>
+        <Select  style={{minWidth:"200px"}}
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Ending Date"
+            value={this.state.charts}
+            onChange={this.handleChartsChange}
+            >
+            <MenuItem value={"Line Chart"}>Line Chart</MenuItem>
+            <MenuItem value={"Bar Chart"}>Bar Chart</MenuItem>
+            
+            </Select>
+            </FormControl>
+        
+{this.state.chart?
+        this.state.charts==='Line Chart'?
+        <>
+             <LineChart
+             style={{marginTop:"50px"}}
+        width={800}
+        height={300}
+        data={this.state.isSelected&& this.state.isSelected1?data:null}
+        margin={{
+          top: 5, right: 30, left: 20, bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name"   />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
+     
+    </LineChart>
+    <br/>
+    </>
+    :
+    <BarChart
+    style={{marginTop:"50px"}}
+        width={500}
+        height={300}
+        data={data}
+        margin={{
+          top: 5, right: 30, left: 20, bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Bar dataKey="pv" fill="#8884d8" />
+        
+      </BarChart>:null}
+
+        </div>
+        </>
+     
+    );
+  }
+}
