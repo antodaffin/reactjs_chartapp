@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
-import {LineChart, Line, BarChart, Bar,  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+import {LineChart, Line, BarChart, Bar,  XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from 'recharts';
 import DateFnsUtils from '@date-io/date-fns';
+
 import {
   
     MuiPickersUtilsProvider,
@@ -12,6 +13,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+const queryString = require('query-string')
+
 
 //   var moment = require('moment');
  
@@ -27,9 +30,36 @@ export default class Charts extends PureComponent {
             isSelected1:false,
             selectedDate1:new Date(),
             charts:"",
-            chart:false
+            chart:false,
+            chartvalues:""
             
         }
+    }
+
+    componentDidMount(){
+        console.log(6766)
+        console.log(this.props.location)
+        console.log(this.props.match)
+       
+        
+      
+        this.getChartValue()
+        // const params=new URLSearchParams(this.props.location.search)
+        // params.get
+    }
+    getChartValue=()=>{
+      let query = this.props.location.search;
+      const parsed = queryString.parse(query);
+console.log(parsed.name);
+   
+      // console.log(query)
+      this.setState({
+        charts:parsed.name,
+        chart:true,
+        selectedDate:parsed.startdate,
+        selectedDate1:parsed.enddate
+      })
+
     }
     
     handleStartDateChange=(date)=>{
@@ -38,18 +68,27 @@ export default class Charts extends PureComponent {
             isSelected:true,
            
         })
+        const startdate1=moment(date).format("MM/DD/YYYY")
+        const enddate1=moment(this.state.selectedDate1).format("MM/DD/YYYY")
+        this.props.history.push(`/charts?name=${this.state.charts}&startdate=${startdate1}&enddate=${enddate1}`);
     }
     handleEndDateChange=(date)=>{ 
         this.setState({
             selectedDate1:date,
             isSelected1:true
         })
+        const startdate2=moment(this.state.selectedDate).format("MM/DD/YYYY")
+        const enddate2=moment(date).format("MM/DD/YYYY")
+        this.props.history.push(`/charts?name=${this.state.charts}&startdate=${startdate2}&enddate=${enddate2}`);
     }
     calculateDaysLeft(selectedDate, selectedDate1) {
         if (!moment.isMoment(selectedDate)) selectedDate = moment(selectedDate);
         if (!moment.isMoment(selectedDate1)) selectedDate1= moment(selectedDate1);    
         return selectedDate1.diff(selectedDate, "days");
       }
+     
+      
+       
 
    
       getDates(selectedDate, selectedDate1) {
@@ -70,12 +109,16 @@ export default class Charts extends PureComponent {
             charts: event.target.value,
             chart:true
         })
+        const sdate=moment(this.state.selectedDate).format("MM/DD/YYYY")
+        const edate=moment(this.state.selectedDate1).format("MM/DD/YYYY")
+        this.props.history.push(`/charts?name=${event.target.value}&startdate=${sdate}&enddate=${edate}`);
       
       };
 
   render() {
-  
-      console.log(this.state.charts)
+   
+  console.log(77)
+      console.log(this.state.chartvalues)
    const days=this.getDates(this.state.selectedDate, this.state.selectedDate1,)
    console.log(days)
      
@@ -114,7 +157,7 @@ export default class Charts extends PureComponent {
 <>
  
         <div style={{marginTop:"50px"}}>
-            <h2>Sample Line Chart</h2>
+            <h2>Sample Line Chart  and Bar Chart</h2>
 
 
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -156,18 +199,18 @@ export default class Charts extends PureComponent {
         <Select  style={{minWidth:"200px"}}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            label="Ending Date"
+           
             value={this.state.charts}
             onChange={this.handleChartsChange}
             >
-            <MenuItem value={"Line Chart"}>Line Chart</MenuItem>
-            <MenuItem value={"Bar Chart"}>Bar Chart</MenuItem>
+            <MenuItem value={"LineChart"}>Line Chart</MenuItem>
+            <MenuItem value={"BarChart"}>Bar Chart</MenuItem>
             
             </Select>
             </FormControl>
         
 {this.state.chart?
-        this.state.charts==='Line Chart'?
+        this.state.charts==='LineChart'?
         <>
              <LineChart
              style={{marginTop:"50px"}}
@@ -188,10 +231,10 @@ export default class Charts extends PureComponent {
     </LineChart>
     <br/>
     </>
-    :
+    : this.state.charts==='BarChart'?
     <BarChart
     style={{marginTop:"50px"}}
-        width={500}
+        width={800}
         height={300}
         data={data}
         margin={{
@@ -205,7 +248,8 @@ export default class Charts extends PureComponent {
         <Legend />
         <Bar dataKey="pv" fill="#8884d8" />
         
-      </BarChart>:null}
+      </BarChart>:null
+      :null}
 
         </div>
         </>
