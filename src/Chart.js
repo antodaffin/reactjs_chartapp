@@ -13,7 +13,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import {auth} from "./firebase";
+
+
+
 const queryString = require('query-string')
+
+
 
 
 //   var moment = require('moment');
@@ -48,7 +54,7 @@ export default class Charts extends PureComponent {
         // params.get
     }
     getChartValue=()=>{
-      let query = this.props.location.search;
+      let query = this.props.location
       const parsed = queryString.parse(query);
 console.log(parsed.name);
    
@@ -252,6 +258,7 @@ console.log(parsed.name);
       :null}
 
         </div>
+        <button variant="contained" color="primary"  onClick = {() => {auth.signOut()}}>Sign out</button>
         </>
      
     );
