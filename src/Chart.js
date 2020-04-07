@@ -52,8 +52,9 @@ export default class Charts extends PureComponent {
     // params.get
   }
   getChartValue = () => {
-    let query = this.props.location;
+    let query = this.props.location.search;
     const parsed = queryString.parse(query);
+    console.log(1)
     console.log(parsed.name);
 
     // console.log(query)
@@ -243,9 +244,8 @@ export default class Charts extends PureComponent {
                   width={800}
                   height={300}
                   data={
-                    this.state.isSelected && this.state.isSelected1
-                      ? data
-                      : null
+                   
+                      data
                   }
                   margin={{
                     top: 5,
