@@ -18,7 +18,8 @@ const NotFound = () => {
 };
 function Application(props) {
   const user = useContext(UserContext);
-  return user ? (
+  return(
+   user ? (
     <Routes />
   ) : (
     <BrowserRouter>
@@ -32,7 +33,9 @@ function Application(props) {
         </Switch>
       </div>
     </BrowserRouter>
-  );
+  )
+  )
+
 }
 
 export default Application;
