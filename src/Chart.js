@@ -43,7 +43,7 @@ export default class Charts extends PureComponent {
   }
 
   componentDidMount() {
-    console.log(6766);
+     console.log(1)   
     console.log(this.props.location);
     console.log(this.props.match);
 
